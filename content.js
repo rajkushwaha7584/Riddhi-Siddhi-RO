@@ -2,5 +2,5 @@
 window.SITE_CONTENT = {
   "phoneDisplay": "+91 70004 11604",
   "phoneDial": "+917000411604",
-  "email": "hello@riddhisiddhienterprises.in"
+  "email": "raj24kush@gmail.com"
 };
