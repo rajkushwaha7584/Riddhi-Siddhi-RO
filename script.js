@@ -151,13 +151,44 @@
     });
   });
 
-  document.querySelectorAll('.email-form[data-form="contact"]').forEach(form => form.addEventListener("submit", event => {
-    event.preventDefault();
-    const data = new FormData(form);
-    const subject = `Website enquiry: ${data.get("topic")}`;
-    const lines = [`Name: ${data.get("name")}`, `Phone: ${data.get("phone") || "Not provided"}`, `Interested in: ${data.get("topic")}`, "", data.get("message") || "No additional details."];
-    const href = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n"))}`;
-    form.querySelector(".form-status").textContent = "Your email app is opening with your message ready to send.";
-    window.location.href = href;
-  }));
+  document.querySelectorAll('.email-form[data-form="contact"]').forEach(form => {
+    const accessKey = content.web3FormsAccessKey || "";
+    const directSendingEnabled = accessKey && !accessKey.startsWith("PASTE_");
+    const hint = form.querySelector(".form-hint");
+    if (directSendingEnabled && hint) hint.textContent = "Your enquiry will be sent directly to our inbox.";
+
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const subject = `Website enquiry: ${data.get("topic")}`;
+      const lines = [`Name: ${data.get("name")}`, `Phone: ${data.get("phone") || "Not provided"}`, `Interested in: ${data.get("topic")}`, "", data.get("message") || "No additional details."];
+      if (directSendingEnabled) {
+        const submitButton = form.querySelector('[type="submit"]');
+        const status = form.querySelector(".form-status");
+        submitButton.disabled = true;
+        status.textContent = "Sending your enquiry...";
+        data.append("access_key", accessKey);
+        data.append("subject", subject);
+        try {
+          const response = await fetch("https://api.web3forms.com/submit", {
+            method: "POST",
+            body: data
+          });
+          const result = await response.json();
+          if (!response.ok || !result.success) throw new Error("The form service rejected the enquiry.");
+          form.reset();
+          status.textContent = "Thanks! Your enquiry was sent successfully.";
+        } catch (error) {
+          console.error("Unable to send contact enquiry.", error);
+          status.textContent = "We could not send your enquiry. Please try again or email us directly.";
+        } finally {
+          submitButton.disabled = false;
+        }
+        return;
+      }
+      const href = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n"))}`;
+      form.querySelector(".form-status").textContent = "Your email app is opening with your message ready to send.";
+      window.location.href = href;
+    });
+  });
 })();
