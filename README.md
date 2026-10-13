@@ -12,7 +12,17 @@ Update the copy and service descriptions directly in `index.html`. The gallery u
 
 ## Customer reviews and contact form
 
-The contact form opens the visitor's email app with a prefilled enquiry. Customer reviews use Firebase Cloud Firestore: customers submit a name (optional), a 1–5 star rating and a message. New reviews are private until you approve them; only approved reviews appear in the portfolio.
+The contact form can open the visitor's email app with a prefilled enquiry or send it directly through Web3Forms when configured. Customer reviews use Firebase Cloud Firestore: customers submit a name (optional), a 1–5 star rating and a message. New reviews are private until you approve them; only approved reviews appear in the portfolio.
+
+### Why Firebase for reviews?
+
+GitHub Pages serves static files (HTML, CSS and JavaScript); it does not provide a shared database or server to receive and store visitor reviews. Without a backend, reviews could only be kept in an individual visitor's browser and would not appear for other customers. Firestore gives the site a shared online collection: customers can submit reviews, the site can display approved reviews across devices, and you can moderate submissions in the Firebase console. The included security rules validate submissions, allow public reads only for approved reviews, and prevent visitors from changing or deleting saved reviews. Web3Forms handles a different job: sending contact enquiries to your email inbox.
+
+Firebase is optional if you decide not to collect public reviews. The rest of the portfolio remains a static GitHub Pages site. Firebase's browser configuration is public because the browser needs it to connect; access is controlled by Firestore rules. Never put a Firebase service-account key or other server credential in frontend files.
+
+### Send contact enquiries directly to email (optional)
+
+The contact form can send without opening the visitor's email app using [Web3Forms](https://web3forms.com/). Create a free account/access key, set `WEB3FORMS_ACCESS_KEY` in local `.env` and as a GitHub Actions repository Variable, then run `python .github/scripts/build_config.py` for local preview. The free plan currently lists 250 monthly submissions. The key is used in browser code, so enable Web3Forms domain restrictions for your deployed site. If the key is not configured, the form keeps using the email-app fallback.
 
 ### Connect Firebase reviews
 
