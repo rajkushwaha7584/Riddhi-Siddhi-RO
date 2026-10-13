@@ -1,38 +1,89 @@
-name: Deploy static portfolio to GitHub Pages
+name: Site checks and GitHub Pages
 
 on:
   push:
+  pull_request:
     branches:
       - master
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: github-pages
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  site-check:
+    name: Check HTML links and sections
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
+      - name: Verify local files and section links
+        run: python3 .github/scripts/check_site.py
 
+  javascript-check:
+    name: Check JavaScript syntax
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Parse each JavaScript file
+        shell: bash
+        run: |
+          for file in *.js; do
+            echo "Checking $file"
+            node --input-type=module --check < "$file"
+          done
+
+  media-check:
+    name: Check portfolio media
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+      - name: Verify gallery images, water video, and water sound
+        shell: bash
+        run: |
+          test -s "video/gemini_generated_video_671da564.mp4"
+          test -s "video/watersound/u_g4b6tnje0y-water-stream-512531.mp3"
+          image_count=$(find images -type f | wc -l)
+          if [ "$image_count" -lt 5 ]; then
+            echo "Expected at least five recent-work images; found $image_count."
+            exit 1
+          fi
+          echo "Found $image_count recent-work images and both media files."
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs:
+      - site-check
+      - javascript-check
+      - media-check
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/master')
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
-
       - name: Upload static site
         uses: actions/upload-pages-artifact@v4
         with:
           path: .
-
       - name: Deploy site
         id: deployment
         uses: actions/deploy-pages@v5
