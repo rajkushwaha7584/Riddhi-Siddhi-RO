@@ -9,7 +9,7 @@ if (canvas && frame && !window.matchMedia('(prefers-reduced-motion: reduce)').ma
     const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
     camera.position.set(0, 0.2, 8.1);
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.2;
@@ -64,14 +64,21 @@ if (canvas && frame && !window.matchMedia('(prefers-reduced-motion: reduce)').ma
     glint.position.set(-0.72, 0.18, 0.54);
     purifier.add(glint);
 
+    const particles = [];
+    const particleMaterial = new THREE.MeshPhysicalMaterial({ color: 0x73e5eb, roughness: 0.08, metalness: 0.12, clearcoat: 1, transparent: true, opacity: 0.85 });
+    for (let i = 0; i < 13; i++) {
+      const bead = new THREE.Mesh(new THREE.SphereGeometry(0.035 + (i % 3) * 0.014, 14, 12), particleMaterial);
+      bead.userData = { angle: i * 2.4, radius: 1.65 + (i % 4) * 0.2, speed: 0.25 + (i % 3) * 0.08, lift: (i % 5) * 0.36 - 0.7 };
+      scene.add(bead);
+      particles.push(bead);
+    }
+
     const fallingDrops = [];
-    const fallingMaterial = new THREE.MeshPhysicalMaterial({ color: 0x91f3f1, emissive: 0x13869b, emissiveIntensity: 0.14, roughness: 0.12, metalness: 0.08, transparent: true, opacity: 0.42, clearcoat: 0.7 });
-    // Keep water movement at the edges so it never obscures the purifier itself.
-    for (let i = 0; i < 8; i++) {
-      const drop = new THREE.Mesh(new THREE.SphereGeometry(0.032 + (i % 2) * 0.008, 10, 8), fallingMaterial);
-      drop.scale.set(0.7, 1.55, 0.7);
-      const side = i % 2 === 0 ? -1 : 1;
-      drop.userData = { x: side * (1.72 + (i % 4) * 0.14), offset: i * 0.61, speed: 0.28 + (i % 3) * 0.07 };
+    const fallingMaterial = new THREE.MeshPhysicalMaterial({ color: 0x91f3f1, emissive: 0x13869b, emissiveIntensity: 0.28, roughness: 0.08, metalness: 0.12, transparent: true, opacity: 0.7, clearcoat: 1 });
+    for (let i = 0; i < 24; i++) {
+      const drop = new THREE.Mesh(new THREE.SphereGeometry(0.045 + (i % 3) * 0.012, 12, 10), fallingMaterial);
+      drop.scale.set(0.72, 1.8, 0.72);
+      drop.userData = { x: -2.05 + ((i * 37) % 41) / 40 * 4.1, offset: i * 0.23, speed: 0.42 + (i % 5) * 0.11 };
       scene.add(drop);
       fallingDrops.push(drop);
     }
@@ -98,15 +105,19 @@ if (canvas && frame && !window.matchMedia('(prefers-reduced-motion: reduce)').ma
     function animate() {
       if (!canvas.isConnected) { observer.disconnect(); renderer.dispose(); return; }
       const t = clock.getElapsedTime();
-      // Keep the purifier front-facing and easy to read; pointer movement only adds a tiny tilt.
-      purifier.rotation.y += (pointer.x * 0.22 - purifier.rotation.y) * 0.018;
-      purifier.rotation.x += (-pointer.y * 0.16 - purifier.rotation.x) * 0.018;
-      purifier.position.y = Math.sin(t * 0.45) * 0.018;
-      droplet.scale.y = 1.2 + Math.sin(t * 0.9) * 0.015;
+      purifier.rotation.y += (pointer.x - purifier.rotation.y) * 0.025;
+      purifier.rotation.x += (-pointer.y - purifier.rotation.x) * 0.025;
+      purifier.position.y = Math.sin(t * 0.8) * 0.055;
+      droplet.scale.y = 1.2 + Math.sin(t * 2) * 0.05;
+      particles.forEach(bead => {
+        const p = bead.userData, a = p.angle + t * p.speed;
+        bead.position.set(Math.cos(a) * p.radius, Math.sin(a * 1.4) * 0.58 + p.lift, Math.sin(a) * 0.65 - 0.1);
+        bead.scale.setScalar(0.72 + (Math.sin(t * 1.7 + p.angle) + 1) * 0.22);
+      });
       fallingDrops.forEach(drop => {
         const p = drop.userData;
-        const fall = (t * p.speed + p.offset) % 5.4;
-        drop.position.set(p.x, 2.7 - fall, -0.72);
+        const fall = (t * p.speed + p.offset) % 5.2;
+        drop.position.set(p.x + Math.sin(t * 1.5 + p.offset) * 0.035, 2.55 - fall, -0.65 + Math.sin(p.offset) * 0.28);
       });
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
