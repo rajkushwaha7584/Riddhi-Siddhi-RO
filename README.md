@@ -21,7 +21,7 @@ GitHub Pages serves static files and does not process form submissions. The cont
 
 No build command is required. Deployment still waits for GitHub Pages to finish publishing; a custom workflow automates the steps but cannot speed up that service-side wait.
 
-The interactive 3D scenes are in `three-scene.js` and `product-scenes.js`; they load Three.js from jsDelivr. They need an internet connection for that library. The CSS purifier artwork and uploaded product photos remain as fallbacks if WebGL or the CDN is unavailable. `theme.css` contains the dark visual theme, and `script.js` handles the responsive navigation and small interactions.
+The interactive 3D scenes are in `three-scene.js` and `water-story.js`; they load Three.js from jsDelivr and need an internet connection. The water-story scene adds its section to the page, animates a person lifting a glass, and labels the pH value as an example rather than a live test. A static fallback appears if WebGL or the CDN is unavailable. `theme.css` contains the dark visual theme, and `script.js` handles the responsive navigation and small interactions.
 
 Visitors can switch between dark and light appearance with the navigation theme button. Their choice is saved in local storage.
 

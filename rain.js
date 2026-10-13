@@ -10,6 +10,7 @@
   let frame = 0;
   let lastTime = 0;
   let drops = [];
+  let productPhotoZones = [];
   const randomPool = new Uint32Array(1024);
   let randomIndex = randomPool.length;
   function random(min, max) {
@@ -34,6 +35,18 @@
     const perScreen = Math.max(34, Math.min(125, Math.round(width / 13)));
     const count = Math.max(perScreen, Math.min(800, Math.ceil(perScreen * pageHeight / height)));
     drops = Array.from({ length: count }, () => makeDrop(true));
+    updateProductPhotoZones();
+  }
+
+  function updateProductPhotoZones() {
+    productPhotoZones = [...document.querySelectorAll('.product-card')].map(card => {
+      const rect = card.getBoundingClientRect();
+      return { left: rect.right - 165, right: rect.right - 14, top: rect.top + 22, bottom: rect.top + 174 };
+    });
+  }
+
+  function isOverProductPhoto(x, y) {
+    return productPhotoZones.some(zone => x >= zone.left && x <= zone.right && y >= zone.top && y <= zone.bottom);
   }
 
   function makeDrop(initial = false) {
@@ -62,6 +75,8 @@
       if (drop.y - drop.length > pageHeight || drop.x < -20 || drop.x > width + 20) Object.assign(drop, makeDrop());
       const screenY = drop.y - window.scrollY;
       if (screenY < -drop.length - 4 || screenY > height + 4) return;
+      // Keep the falling-water layer off the product photos so the machines stay clear.
+      if (isOverProductPhoto(drop.x, screenY)) return;
 
       const trail = context.createLinearGradient(drop.x, screenY - drop.length, drop.x, screenY + 2);
       trail.addColorStop(0, 'rgba(83, 210, 230, 0)');
@@ -91,6 +106,7 @@
   }
 
   window.addEventListener('resize', resize, { passive: true });
+  window.addEventListener('scroll', updateProductPhotoZones, { passive: true });
   document.addEventListener('visibilitychange', start);
   new ResizeObserver(resize).observe(document.documentElement);
   resize();

@@ -1,0 +1,58 @@
+.water-story{position:relative;overflow:hidden;padding:92px 0 96px;background:radial-gradient(ellipse at 82% 48%,#0e59652b,transparent 42%),linear-gradient(135deg,#071925,#0b2431 57%,#0a202d);border-block:1px solid #9be9ec12}
+.water-story-inner{position:relative;z-index:1}
+.water-story-heading{display:flex;align-items:end;justify-content:space-between;gap:28px;margin-bottom:32px}
+.water-story-heading h2{margin:13px 0 12px;color:#eefaff;font:750 clamp(34px,4vw,52px)/1.03 var(--display);letter-spacing:-.065em}
+.water-story-heading h2 span{color:#70d9e8}
+.water-story-heading p{max-width:440px;margin:0;color:#adc1ca;font-size:13px;line-height:1.7}
+.water-story-heading .text-link{flex:none;margin-bottom:4px;color:#d8f7f8}
+.water-story-grid{display:grid;grid-template-columns:minmax(245px,.78fr) minmax(0,1.5fr);align-items:stretch;gap:27px}
+.water-story-steps{display:flex;flex-direction:column;justify-content:center;gap:10px}
+.water-story-steps article{display:grid;grid-template-columns:39px 1fr;align-items:start;gap:12px;padding:15px 14px;border:1px solid #c1eff019;border-radius:13px;background:linear-gradient(145deg,#113140b5,#0c2431b5)}
+.story-step-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:#155263;color:#a2eff0;font:800 11px var(--display)}
+.water-story-steps h3{margin:0 0 4px;color:#e8f8fa;font:700 14px var(--display)}
+.water-story-steps article p{margin:0;color:#9fb7c0;font-size:10px;line-height:1.6}
+.ph-note{margin:4px 2px 0;color:#92aab3;font-size:9px;line-height:1.7}
+.ph-note a{color:#83dce5;text-decoration:underline;text-underline-offset:2px}
+.water-story-steps .story-ph-card{position:relative;left:auto;bottom:auto;width:auto;max-width:245px;margin-top:2px}
+.water-story-stage{position:relative;min-width:0;min-height:410px;overflow:hidden;border:1px solid #a4e6eb29;border-radius:22px;background:radial-gradient(ellipse at 57% 35%,#12667b8a 0,transparent 45%),radial-gradient(ellipse at 72% 92%,#0f536a80,transparent 55%),linear-gradient(145deg,#0d3040,#0a202e 75%);box-shadow:inset 0 1px #ffffff0d,0 25px 60px #01091052}
+.water-story-stage:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.4;background-image:radial-gradient(#d9ffff20 1px,transparent 1px);background-size:21px 21px;mask-image:linear-gradient(130deg,#0008,transparent 78%)}
+#water-story-canvas{position:absolute;inset:0;z-index:1;width:100%;height:100%}
+.story-stage-label,.story-ph-card,.story-scene-caption,.story-scene-fallback{position:absolute;z-index:2}
+.story-stage-label{top:18px;left:20px;display:flex;align-items:center;gap:8px;color:#b2e8e9;font-size:8px;font-weight:800;letter-spacing:.15em}
+.story-live-dot{width:7px;height:7px;border-radius:50%;background:#63e1b0;box-shadow:0 0 11px #63e1b0}
+.story-ph-card{left:19px;bottom:20px;width:158px;padding:13px 14px 11px;border:1px solid #a8edf028;border-radius:13px;background:#08202de8;box-shadow:0 14px 32px #02090d65;backdrop-filter:blur(12px)}
+.story-ph-card>span{display:block;margin-bottom:5px;color:#91b5bd;font-size:8px;font-weight:800;letter-spacing:.13em}
+.story-ph-card>strong{display:flex;align-items:baseline;gap:8px;color:#effeff;font:800 24px/1 var(--display);letter-spacing:-.04em}
+.story-ph-card>strong small{color:#69e0c1;font:700 8px var(--sans);letter-spacing:.11em}
+.ph-scale{position:relative;height:7px;margin:12px 0 6px;border-radius:99px;background:linear-gradient(90deg,#ef6883 0%,#f5bb65 28%,#67d5a5 50%,#51c7d3 70%,#758bf0 100%)}
+.ph-scale b{position:absolute;left:50%;top:-4px;width:3px;height:15px;border-radius:3px;background:white;box-shadow:0 0 7px #ffffffb0}
+.ph-range{display:flex;justify-content:space-between;color:#90adb4;font-size:7px;font-weight:700;letter-spacing:.03em}
+.story-scene-caption{right:20px;bottom:25px;color:#c0dadd;font-size:9px;font-weight:700;letter-spacing:.08em}
+.story-scene-caption span{margin:0 7px;color:#5bd1dc}
+.story-scene-fallback{inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;color:#def7f7;font:700 14px var(--display)}
+.story-scene-fallback span{display:grid;place-items:center;width:68px;height:68px;border-radius:50%;background:#135166;font-size:34px;box-shadow:0 0 40px #40d2dd36}
+.water-story-stage.water-scene-failed #water-story-canvas{display:none}
+.water-story-stage.water-scene-failed .story-scene-fallback{display:flex}
+:root[data-theme="light"] .water-story{background:radial-gradient(ellipse at 82% 48%,#bce6e627,transparent 42%),linear-gradient(135deg,#f3f9f7,#e8f3f1 57%,#f4f7f2);border-color:#1b75850d}
+:root[data-theme="light"] .water-story-heading h2{color:#102b49}
+:root[data-theme="light"] .water-story-heading h2 span{color:#168eaa!important}
+:root[data-theme="light"] .water-story-heading p{color:#71808d}
+:root[data-theme="light"] .water-story-heading .text-link{color:#173d54}
+:root[data-theme="light"] .water-story-steps article{background:linear-gradient(145deg,#ffffffdb,#eff6f4);border-color:#1a708414;box-shadow:0 10px 26px #173a4b0b}
+:root[data-theme="light"] .story-step-icon{background:#d9f1ed;color:#277d87}
+:root[data-theme="light"] .water-story-steps h3{color:#17354b}
+:root[data-theme="light"] .water-story-steps article p{color:#687d88}
+:root[data-theme="light"] .ph-note{color:#74878e}
+:root[data-theme="light"] .ph-note a{color:#137b90}
+:root[data-theme="light"] .water-story-stage{border-color:#5aabb433;background:radial-gradient(ellipse at 57% 35%,#a8dfdf 0,transparent 46%),radial-gradient(ellipse at 72% 92%,#badfdf,transparent 55%),linear-gradient(145deg,#e3f3f0,#d9eceb 75%);box-shadow:inset 0 1px #ffffffc9,0 25px 60px #173a4b18}
+:root[data-theme="light"] .water-story-stage:before{opacity:.3;background-image:radial-gradient(#12617018 1px,transparent 1px)}
+:root[data-theme="light"] .story-stage-label{color:#397983}
+:root[data-theme="light"] .story-ph-card{background:#f7ffffe8;border-color:#287f8d24;box-shadow:0 14px 32px #173a4b1c}
+:root[data-theme="light"] .story-ph-card>span{color:#6d8990}
+:root[data-theme="light"] .story-ph-card>strong{color:#173d50}
+:root[data-theme="light"] .story-ph-card>strong small{color:#187e6a}
+:root[data-theme="light"] .ph-range,:root[data-theme="light"] .story-scene-caption{color:#526d77}
+:root[data-theme="light"] .story-scene-fallback{color:#173d50}
+@media(max-width:760px){.water-story{padding:69px 0 74px}.water-story-heading{align-items:flex-start;flex-direction:column;gap:16px;margin-bottom:23px}.water-story-heading h2{font-size:39px}.water-story-grid{grid-template-columns:1fr;gap:15px}.water-story-stage{order:-1;min-height:360px}.water-story-steps article{padding:13px}.story-ph-card{left:12px;bottom:12px;width:143px;padding:11px}.story-scene-caption{right:13px;bottom:17px;font-size:8px}}
+@media(max-width:390px){.water-story-stage{min-height:320px}.story-ph-card{width:130px}.story-scene-caption{max-width:100px;text-align:right;line-height:1.5}}
+@media(prefers-reduced-motion:reduce){.story-live-dot{box-shadow:none}}
