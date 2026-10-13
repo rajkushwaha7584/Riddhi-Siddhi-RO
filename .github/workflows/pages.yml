@@ -60,12 +60,33 @@ jobs:
           fi
           echo "Found $image_count recent-work images and both media files."
 
+  firebase-check:
+    name: Check review database files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+      - name: Validate Firebase deployment config
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          config = json.loads(Path("firebase.json").read_text(encoding="utf-8"))
+          indexes = json.loads(Path(config["firestore"]["indexes"]).read_text(encoding="utf-8"))
+          rules = Path(config["firestore"]["rules"])
+          assert rules.is_file(), f"Missing Firestore rules: {rules}"
+          assert any(item["collectionGroup"] == "reviews" for item in indexes["indexes"]), "Missing reviews index"
+          print("Firebase rules and review index are present.")
+          PY
+
   deploy:
     name: Deploy to GitHub Pages
     needs:
       - site-check
       - javascript-check
       - media-check
+      - firebase-check
     if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/master')
     environment:
       name: github-pages
@@ -80,6 +101,16 @@ jobs:
         uses: actions/checkout@v6
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
+      - name: Generate public site configuration
+        run: python3 .github/scripts/build_config.py
+        env:
+          SITE_PHONE_DISPLAY: ${{ vars.SITE_PHONE_DISPLAY }}
+          SITE_PHONE_DIAL: ${{ vars.SITE_PHONE_DIAL }}
+          SITE_EMAIL: ${{ vars.SITE_EMAIL }}
+          FIREBASE_API_KEY: ${{ vars.FIREBASE_API_KEY }}
+          FIREBASE_AUTH_DOMAIN: ${{ vars.FIREBASE_AUTH_DOMAIN }}
+          FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+          FIREBASE_APP_ID: ${{ vars.FIREBASE_APP_ID }}
       - name: Upload static site
         uses: actions/upload-pages-artifact@v4
         with:
