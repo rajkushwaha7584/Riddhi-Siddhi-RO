@@ -12,7 +12,7 @@ Update the copy and service descriptions directly in `index.html`. The gallery u
 
 ## Customer reviews and contact form
 
-The contact form can open the visitor's email app with a prefilled enquiry or send it directly through Web3Forms when configured. Customer reviews use Firebase Cloud Firestore: customers submit a name (optional), a 1–5 star rating and a message. New reviews are private until you approve them; only approved reviews appear in the portfolio.
+The contact form can open the visitor's email app with a prefilled enquiry or send it directly through Web3Forms when configured. Customer reviews use Firebase Cloud Firestore: customers submit a name (optional), a 1–5 star rating and a message. New reviews are private until you approve them; only approved reviews appear in the portfolio. The carousel shows the latest 50 approved reviews, with three cards per desktop slide, two on tablet and one on mobile. Visitors can swipe, use the arrow buttons or jump with the animated water-fill page dots.
 
 ### Why Firebase for reviews?
 
