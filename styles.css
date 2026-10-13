@@ -61,3 +61,12 @@ body{background:#f5f9f8}
 .work-large .work-caption h3,.work-grid>.work-card:not(.work-large) .work-caption h3{font-size:14px}
 .work-large .work-caption p,.work-grid>.work-card:not(.work-large) .work-caption p{font-size:10px}
 .work-caption h3:after,.work-caption p:after{content:none}
+.sound-toggle{display:inline-flex;align-items:center;gap:9px;min-height:40px;padding:0 12px;border:1px solid #9be9ec26;border-radius:999px;background:#0c2638d9;color:#c6e8ec;font-size:10px;font-weight:700;white-space:nowrap;cursor:pointer;transition:background .2s,border-color .2s,transform .2s,box-shadow .2s}
+.hero-actions{flex-wrap:wrap}
+.sound-toggle:hover{transform:translateY(-1px);border-color:#70d7e96b}
+.sound-toggle:focus-visible{outline:3px solid #70d7e9;outline-offset:3px}
+.sound-icon{display:grid;place-items:center;color:#70d7e9;font-size:14px}
+.sound-state{padding:4px 7px;border-radius:999px;background:#ffffff12;color:#a8bdc6;font-size:8px;text-transform:uppercase}
+.sound-toggle[aria-pressed="true"] .sound-state{background:#70d7e921;color:#83e2d0}
+@media(max-width:760px){.hero-actions{flex-wrap:wrap;gap:10px}.sound-toggle{min-height:38px}.hero-actions .button-primary{min-width:170px}}
+@media(max-width:390px){.sound-toggle{font-size:9px;padding-inline:10px}.hero-actions .button-primary{min-width:0}}
