@@ -33,7 +33,7 @@
 .story-scene-fallback span{display:grid;place-items:center;width:68px;height:68px;border-radius:50%;background:#135166;font-size:34px;box-shadow:0 0 40px #40d2dd36}
 .water-story-stage.water-scene-failed #water-story-canvas{display:none}
 .water-story-stage.water-scene-failed .story-scene-fallback{display:flex}
-:root[data-theme="light"] .water-story{background:radial-gradient(ellipse at 82% 48%,#bce6e627,transparent 42%),linear-gradient(135deg,#f3f9f7,#e8f3f1 57%,#f4f7f2);border-color:#1b75850d}
+:root[data-theme="light"] .water-story{background:radial-gradient(ellipse 46% 100% at 0% 50%,#d8eff6a8,transparent 100%),radial-gradient(ellipse 46% 100% at 100% 50%,#d8eff6a8,transparent 100%),linear-gradient(90deg,#edf7fa 0%,#f9fcfd 28%,#fff 50%,#f9fcfd 72%,#edf7fa 100%);border-color:#1b75850d}
 :root[data-theme="light"] .water-story-heading h2{color:#102b49}
 :root[data-theme="light"] .water-story-heading h2 span{color:#168eaa!important}
 :root[data-theme="light"] .water-story-heading p{color:#71808d}
@@ -44,7 +44,7 @@
 :root[data-theme="light"] .water-story-steps article p{color:#687d88}
 :root[data-theme="light"] .ph-note{color:#74878e}
 :root[data-theme="light"] .ph-note a{color:#137b90}
-:root[data-theme="light"] .water-story-stage{border-color:#5aabb433;background:radial-gradient(ellipse at 57% 35%,#a8dfdf 0,transparent 46%),radial-gradient(ellipse at 72% 92%,#badfdf,transparent 55%),linear-gradient(145deg,#e3f3f0,#d9eceb 75%);box-shadow:inset 0 1px #ffffffc9,0 25px 60px #173a4b18}
+:root[data-theme="light"] .water-story-stage{border-color:#5aabb433;background:radial-gradient(ellipse 48% 100% at 0% 50%,#ccebf2b3,transparent 100%),radial-gradient(ellipse 48% 100% at 100% 50%,#ccebf2b3,transparent 100%),linear-gradient(90deg,#e7f4f7 0%,#f8fcfd 30%,#fff 50%,#f8fcfd 70%,#e7f4f7 100%);box-shadow:inset 0 1px #ffffffc9,0 25px 60px #173a4b18}
 :root[data-theme="light"] .water-story-stage:before{opacity:.3;background-image:radial-gradient(#12617018 1px,transparent 1px)}
 :root[data-theme="light"] .story-stage-label{color:#397983}
 :root[data-theme="light"] .story-ph-card{background:#f7ffffe8;border-color:#287f8d24;box-shadow:0 14px 32px #173a4b1c}
