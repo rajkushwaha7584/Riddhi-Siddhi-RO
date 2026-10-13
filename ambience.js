@@ -1,105 +1,45 @@
 (() => {
   const soundButton = document.querySelector('.sound-toggle');
   const soundState = soundButton?.querySelector('.sound-state');
-  const voiceButton = document.querySelector('.voice-toggle');
-  const voiceStatus = document.querySelector('.voice-status');
-  let audioContext;
-  let waterGain;
-  let sourceNodes = [];
-  let closingTimer;
+  const waterSound = new Audio('video/watersound/u_g4b6tnje0y-water-stream-512531.mp3');
+  waterSound.loop = true;
+  waterSound.preload = 'none';
+  waterSound.volume = 0.24;
 
-  function makeWaterfall() {
-    const Context = window.AudioContext || window.webkitAudioContext;
-    if (!Context) throw new Error('Web Audio is not supported in this browser.');
-    audioContext = new Context();
-    const size = audioContext.sampleRate * 3;
-    const buffer = audioContext.createBuffer(1, size, audioContext.sampleRate);
-    const channel = buffer.getChannelData(0);
-    const noise = new Int16Array(size);
-    const cryptoBlock = 0x8000;
-    for (let offset = 0; offset < size; offset += cryptoBlock) {
-      window.crypto.getRandomValues(noise.subarray(offset, Math.min(offset + cryptoBlock, size)));
-    }
-    let brown = 0;
-    for (let i = 0; i < size; i++) {
-      const white = noise[i] / 32768;
-      brown = (brown + 0.025 * white) / 1.025;
-      channel[i] = brown * 3.2;
-    }
-
-    const source = audioContext.createBufferSource();
-    source.buffer = buffer;
-    source.loop = true;
-    const rumbleFilter = audioContext.createBiquadFilter();
-    rumbleFilter.type = 'lowpass';
-    rumbleFilter.frequency.value = 850;
-    const rumbleGain = audioContext.createGain();
-    rumbleGain.gain.value = 0.065;
-    source.connect(rumbleFilter).connect(rumbleGain).connect(audioContext.destination);
-    source.start();
-    sourceNodes.push(source);
-
-    const sparkleSource = audioContext.createBufferSource();
-    sparkleSource.buffer = buffer;
-    sparkleSource.loop = true;
-    const sparkleFilter = audioContext.createBiquadFilter();
-    sparkleFilter.type = 'bandpass';
-    sparkleFilter.frequency.value = 1750;
-    sparkleFilter.Q.value = 0.55;
-    waterGain = audioContext.createGain();
-    waterGain.gain.value = 0.013;
-    sparkleSource.connect(sparkleFilter).connect(waterGain).connect(audioContext.destination);
-    sparkleSource.start();
-    sourceNodes.push(sparkleSource);
-
-    const lfo = audioContext.createOscillator();
-    const lfoAmount = audioContext.createGain();
-    lfo.type = 'sine';
-    lfo.frequency.value = 0.12;
-    lfoAmount.gain.value = 0.009;
-    lfo.connect(lfoAmount).connect(rumbleGain.gain);
-    lfo.start();
-    sourceNodes.push(lfo);
-    return audioContext.resume();
-  }
-
-  function stopWaterfall() {
-    if (!audioContext) return;
-    const closingContext = audioContext;
-    sourceNodes.forEach(node => { try { node.stop(); } catch { /* Already stopped. */ } });
-    sourceNodes = [];
-    audioContext = null;
-    waterGain = null;
-    clearTimeout(closingTimer);
-    closingTimer = setTimeout(() => closingContext.close().catch(() => {}), 80);
+  function setSoundState(isPlaying, label) {
+    soundButton?.setAttribute('aria-pressed', String(isPlaying));
+    if (soundState) soundState.textContent = label;
+    soundButton?.setAttribute('aria-label', isPlaying ? 'Turn off water stream sound' : 'Turn on water stream sound');
   }
 
   soundButton?.addEventListener('click', async () => {
-    const enabled = soundButton.getAttribute('aria-pressed') === 'true';
-    if (enabled) {
-      stopWaterfall();
-      soundButton.setAttribute('aria-pressed', 'false');
-      soundButton.setAttribute('aria-label', 'Turn on gentle water ambience');
-      soundState.textContent = 'Off';
+    if (!waterSound.paused) {
+      waterSound.pause();
+      setSoundState(false, 'Off');
       return;
     }
+
     try {
-      clearTimeout(closingTimer);
-      await makeWaterfall();
-      soundButton.setAttribute('aria-pressed', 'true');
-      soundButton.setAttribute('aria-label', 'Turn off gentle water ambience');
-      soundState.textContent = 'On';
+      await waterSound.play();
+      setSoundState(true, 'On');
     } catch (error) {
-      stopWaterfall();
-      soundState.textContent = 'Unavailable';
-      soundButton.setAttribute('aria-label', 'Water ambience is unavailable in this browser');
-      console.info('Water ambience could not start.', error);
+      setSoundState(false, 'Unavailable');
+      soundButton.setAttribute('aria-label', 'Water stream sound could not be played');
+      console.info('Water sound could not be played.', error);
     }
   });
 
+  waterSound.addEventListener('error', () => setSoundState(false, 'Unavailable'));
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) waterSound.pause();
+    else if (soundButton?.getAttribute('aria-pressed') === 'true') waterSound.play().catch(() => setSoundState(false, 'Unavailable'));
+  });
+
+  const voiceButton = document.querySelector('.voice-toggle');
+  const voiceStatus = document.querySelector('.voice-status');
   voiceButton?.addEventListener('click', () => {
     if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
-      voiceStatus.textContent = 'Your browser does not support spoken audio. जल ही जीवन है।';
+      if (voiceStatus) voiceStatus.textContent = 'Spoken audio is not supported in this browser.';
       return;
     }
     window.speechSynthesis.cancel();
@@ -107,15 +47,9 @@
     line.lang = 'hi-IN';
     line.rate = 0.82;
     line.pitch = 1;
-    line.onstart = () => { voiceStatus.textContent = 'जल ही जीवन है…'; };
-    line.onend = () => { voiceStatus.textContent = ''; };
-    line.onerror = () => { voiceStatus.textContent = 'जल ही जीवन है।'; };
-    voiceStatus.textContent = 'Playing Hindi voice…';
+    line.onstart = () => { if (voiceStatus) voiceStatus.textContent = 'Playing Hindi voice…'; };
+    line.onend = () => { if (voiceStatus) voiceStatus.textContent = ''; };
+    line.onerror = () => { if (voiceStatus) voiceStatus.textContent = 'Hindi voice could not be played.'; };
     window.speechSynthesis.speak(line);
-  });
-
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden && audioContext?.state === 'running') audioContext.suspend();
-    else if (!document.hidden && audioContext?.state === 'suspended' && soundButton?.getAttribute('aria-pressed') === 'true') audioContext.resume();
   });
 })();
