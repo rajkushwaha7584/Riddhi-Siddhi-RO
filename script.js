@@ -122,20 +122,40 @@
 
   let rating = "";
   const stars = [...document.querySelectorAll(".rating button")];
-  stars.forEach(star => star.addEventListener("click", () => {
+  function chooseRating(star, moveFocus = false) {
     rating = star.dataset.rating;
     document.querySelector('[name="rating"]').value = rating;
-    stars.forEach(item => item.classList.toggle("selected", Number(item.dataset.rating) <= Number(rating)));
-  }));
+    stars.forEach(item => {
+      const selected = Number(item.dataset.rating) === Number(rating);
+      item.classList.toggle("selected", Number(item.dataset.rating) <= Number(rating));
+      item.setAttribute("aria-checked", String(selected));
+      item.tabIndex = selected ? 0 : -1;
+    });
+    if (moveFocus) star.focus();
+  }
+  stars.forEach((star, index) => {
+    star.addEventListener("click", () => chooseRating(star));
+    star.addEventListener("keydown", event => {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+      event.preventDefault();
+      const nextIndex = event.key === "Home" ? 0 : event.key === "End" ? stars.length - 1 : (index + (event.key === "ArrowRight" ? 1 : stars.length - 1)) % stars.length;
+      chooseRating(stars[nextIndex], true);
+    });
+  });
+  document.querySelector("#review-form")?.addEventListener("reset", () => {
+    rating = "";
+    stars.forEach((star, index) => {
+      star.classList.remove("selected");
+      star.setAttribute("aria-checked", "false");
+      star.tabIndex = index === 0 ? 0 : -1;
+    });
+  });
 
-  document.querySelectorAll(".email-form").forEach(form => form.addEventListener("submit", event => {
+  document.querySelectorAll('.email-form[data-form="contact"]').forEach(form => form.addEventListener("submit", event => {
     event.preventDefault();
     const data = new FormData(form);
-    const isFeedback = form.dataset.form === "feedback";
-    const subject = isFeedback ? "Website feedback" : `Website enquiry: ${data.get("topic")}`;
-    const lines = isFeedback
-      ? [`Feedback from: ${data.get("name") || "Not provided"}`, `Rating: ${data.get("rating") || "Not provided"} / 5`, "", data.get("message")]
-      : [`Name: ${data.get("name")}`, `Phone: ${data.get("phone") || "Not provided"}`, `Interested in: ${data.get("topic")}`, "", data.get("message") || "No additional details."];
+    const subject = `Website enquiry: ${data.get("topic")}`;
+    const lines = [`Name: ${data.get("name")}`, `Phone: ${data.get("phone") || "Not provided"}`, `Interested in: ${data.get("topic")}`, "", data.get("message") || "No additional details."];
     const href = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n"))}`;
     form.querySelector(".form-status").textContent = "Your email app is opening with your message ready to send.";
     window.location.href = href;
