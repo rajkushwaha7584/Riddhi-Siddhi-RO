@@ -1,0 +1,38 @@
+.experience-section{position:relative;padding-top:82px;padding-bottom:84px;isolation:isolate}
+.experience-section:before{content:"";position:absolute;z-index:-1;inset:0 calc((1180px - 100vw)/2);background:radial-gradient(ellipse at 5% 15%,#0e50632c,transparent 42%),linear-gradient(135deg,#091b29,#0c2634 58%,#0a202e)}
+.experience-section .section-heading{margin-bottom:29px}
+.experience-section .section-heading h2{max-width:620px}
+.experience-section .section-heading h2 span{color:#73d6e2}
+.experience-section .section-heading>p{max-width:370px}
+.experience-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.experience-card{position:relative;display:flex;flex-direction:column;min-height:284px;padding:25px 23px 22px;overflow:hidden;border:1px solid #b4e9ef24;border-radius:18px;background:linear-gradient(145deg,#122f3eeb,#0c2231f2);box-shadow:0 18px 42px #01091035,inset 0 1px #ffffff0c;transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
+.experience-card:hover{transform:translateY(-5px);border-color:#79dce561;box-shadow:0 24px 48px #01091057,0 0 25px #27bdd215}
+.experience-icon{position:absolute;right:17px;top:3px;color:#d8faff0a;font:800 70px/1 var(--display);letter-spacing:-.08em}
+.experience-label{position:relative;color:#83cbd5;font-size:9px;font-weight:700;letter-spacing:.14em}
+.experience-card h3{position:relative;margin:23px 0 11px;color:#edf9fb;font:750 19px/1.28 var(--display);letter-spacing:-.035em}
+.experience-card p{position:relative;margin:0 0 22px;color:#adc2ca;font-size:12px;line-height:1.75}
+.experience-card>a{position:relative;display:inline-flex;align-items:center;gap:8px;margin-top:auto;color:#dbf8fa;font-size:11px;font-weight:700}
+.experience-card>a span{color:#73d6e2;transition:transform .2s ease}
+.experience-card>a:hover span{transform:translate(3px,-2px)}
+.experience-project{background:radial-gradient(ellipse at 100% 0%,#1e74813d,transparent 56%),linear-gradient(145deg,#163745,#0e2937 78%);border-color:#75d7d248}
+.project-status{position:absolute;right:18px;top:19px;display:flex;align-items:center;gap:6px;padding:6px 9px;border:1px solid #7ad8d333;border-radius:99px;color:#b9eaeb;font-size:8px;font-weight:700;letter-spacing:.08em}
+.project-status i{width:6px;height:6px;border-radius:50%;background:#63dfb0;box-shadow:0 0 9px #63dfb0;animation:project-pulse 1.8s ease-in-out infinite}
+.experience-note{margin:17px 0 0;color:#91aeb9;font-size:10px;line-height:1.6}
+@keyframes project-pulse{50%{opacity:.42;box-shadow:0 0 2px #63dfb0}}
+:root[data-theme="light"] .experience-section:before{background:radial-gradient(ellipse at 5% 15%,#d8eff02c,transparent 42%),linear-gradient(135deg,#f5f9f7,#eaf3f1 58%,#f4f6f1)}
+:root[data-theme="light"] .experience-section .section-heading h2{color:#102b49}
+:root[data-theme="light"] .experience-section .section-heading h2 span{color:#168eaa}
+:root[data-theme="light"] .experience-section .section-heading>p{color:#71808d}
+:root[data-theme="light"] .experience-section .section-kicker{color:#647d96}
+:root[data-theme="light"] .experience-card{background:linear-gradient(145deg,#ffffffed,#f0f6f5);border-color:#1a708419;box-shadow:0 16px 38px #173a4b13,inset 0 1px #fff}
+:root[data-theme="light"] .experience-card:hover{border-color:#168eaa58;box-shadow:0 22px 42px #173a4b20}
+:root[data-theme="light"] .experience-label{color:#397f8a}
+:root[data-theme="light"] .experience-card h3{color:#17354b}
+:root[data-theme="light"] .experience-card p{color:#687d88}
+:root[data-theme="light"] .experience-card>a{color:#17354b}
+:root[data-theme="light"] .experience-card>a span{color:#168eaa}
+:root[data-theme="light"] .experience-project{background:radial-gradient(ellipse at 100% 0%,#ccebed7d,transparent 56%),linear-gradient(145deg,#f4fbfa,#e8f3f1 78%);border-color:#168eaa42}
+:root[data-theme="light"] .project-status{color:#31747b;border-color:#168eaa30}
+:root[data-theme="light"] .experience-note{color:#778b92}
+@media(max-width:760px){.experience-section{padding-top:68px;padding-bottom:70px}.experience-grid{grid-template-columns:1fr;gap:12px}.experience-card{min-height:unset;padding:23px 21px 20px}.experience-card h3{margin-top:17px}.experience-card p{max-width:540px}.experience-section:before{inset:0 -23px}}
+@media(prefers-reduced-motion:reduce){.experience-card,.experience-card>a span{transition:none}.project-status i{animation:none}}
