@@ -5,6 +5,21 @@ const reviewList = document.querySelector("#published-reviews");
 const summary = document.querySelector("#review-summary");
 const submitButton = form?.querySelector('[type="submit"]');
 const status = form?.querySelector(".form-status");
+const reviewViewport = document.querySelector("#review-viewport");
+const reviewControls = document.querySelector("#review-carousel-controls");
+const reviewPagination = document.querySelector("#review-pagination");
+const reviewPageStatus = document.querySelector("#review-page-status");
+const previousReviewsButton = document.querySelector("[data-review-prev]");
+const nextReviewsButton = document.querySelector("[data-review-next]");
+let latestReviews = [];
+let pageCapacity = 0;
+let lastActivePage = -1;
+
+function reviewsPerPage() {
+  if (matchMedia("(max-width: 620px)").matches) return 1;
+  if (matchMedia("(max-width: 980px)").matches) return 2;
+  return 3;
+}
 
 function showMessage(container, message) {
   if (!container) return;
@@ -12,10 +27,109 @@ function showMessage(container, message) {
   paragraph.className = "review-loading";
   paragraph.textContent = message;
   container.replaceChildren(paragraph);
+  updateCarouselControls();
+}
+
+function renderReviewDots(activePage, pageCount) {
+  if (!reviewPagination) return;
+  reviewPagination.replaceChildren();
+  const visibleDotCount = Math.min(7, pageCount);
+  const firstPage = Math.max(0, Math.min(activePage - Math.floor(visibleDotCount / 2), pageCount - visibleDotCount));
+
+  for (let page = firstPage; page < firstPage + visibleDotCount; page += 1) {
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.className = "review-dot";
+    dot.setAttribute("aria-label", `Show review page ${page + 1}`);
+    if (page === activePage) dot.setAttribute("aria-current", "page");
+    dot.addEventListener("click", () => setReviewPage(page));
+    reviewPagination.append(dot);
+  }
+}
+
+function updateCarouselControls() {
+  if (!reviewList || !reviewViewport) return;
+  const pageCount = reviewList.querySelectorAll(":scope > .review-page").length;
+  const width = reviewViewport.clientWidth || 1;
+  const activePage = Math.min(pageCount - 1, Math.max(0, Math.round(reviewViewport.scrollLeft / width)));
+  if (reviewControls) reviewControls.hidden = pageCount < 2;
+  if (previousReviewsButton) previousReviewsButton.disabled = activePage <= 0;
+  if (nextReviewsButton) nextReviewsButton.disabled = activePage >= pageCount - 1;
+  if (reviewPageStatus) reviewPageStatus.textContent = pageCount ? `Page ${activePage + 1} of ${pageCount}` : "";
+  if (activePage !== lastActivePage) {
+    lastActivePage = activePage;
+    renderReviewDots(activePage, pageCount);
+  }
+}
+
+function setReviewPage(page) {
+  if (!reviewViewport || !reviewList) return;
+  const pageCount = reviewList.querySelectorAll(":scope > .review-page").length;
+  if (!pageCount) return;
+  const targetPage = Math.min(pageCount - 1, Math.max(0, page));
+  reviewViewport.scrollTo({
+    left: targetPage * reviewViewport.clientWidth,
+    behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
+  });
+  updateCarouselControls();
+}
+
+previousReviewsButton?.addEventListener("click", () => {
+  if (!reviewViewport) return;
+  setReviewPage(Math.round(reviewViewport.scrollLeft / (reviewViewport.clientWidth || 1)) - 1);
+});
+nextReviewsButton?.addEventListener("click", () => {
+  if (!reviewViewport) return;
+  setReviewPage(Math.round(reviewViewport.scrollLeft / (reviewViewport.clientWidth || 1)) + 1);
+});
+reviewViewport?.addEventListener("scroll", () => requestAnimationFrame(updateCarouselControls), { passive: true });
+window.addEventListener("resize", () => {
+  if (latestReviews.length && reviewsPerPage() !== pageCapacity) renderReviews(latestReviews);
+  else updateCarouselControls();
+}, { passive: true });
+
+function addCardCreatures(card, rating) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches || card.querySelector(".review-creature")) return;
+
+  const svgNamespace = "http://www.w3.org/2000/svg";
+  const isFish = rating >= 3;
+  const count = Math.max(1, Math.min(5, rating));
+  for (let index = 0; index < count; index += 1) {
+    const creature = document.createElement("span");
+    creature.className = isFish ? "review-creature review-fish" : "review-creature review-bird";
+    creature.setAttribute("aria-hidden", "true");
+    creature.style.setProperty("--creature-index", String(index));
+    creature.style.setProperty("--creature-x", `${((index + 1) / (count + 1)) * 100}%`);
+    creature.style.setProperty("--creature-size", `${isFish && count >= 4 ? 38 : 46}px`);
+    creature.style.setProperty("--bird-offset", `${index * 10}px`);
+
+    const svg = document.createElementNS(svgNamespace, "svg");
+    svg.setAttribute("viewBox", isFish ? "0 0 64 42" : "0 0 64 40");
+    svg.setAttribute("focusable", "false");
+    const shape = document.createElementNS(svgNamespace, "path");
+    if (isFish) {
+      shape.setAttribute("d", "M8 21 1 11l2 12-2 9 9-6c8 10 25 13 38 4l14 7-3-16 3-15-15 8C34 6 17 10 8 21Z");
+      shape.setAttribute("class", "review-fish-shape");
+      const eye = document.createElementNS(svgNamespace, "circle");
+      eye.setAttribute("cx", "14");
+      eye.setAttribute("cy", "20");
+      eye.setAttribute("r", "1.8");
+      eye.setAttribute("class", "review-fish-eye");
+      svg.append(shape, eye);
+    } else {
+      shape.setAttribute("d", "M2 29c10-4 17-14 24-25 3 8 9 13 17 15 7 2 14-1 19-6-4 13-14 22-27 23-12 1-23-4-33-7Zm24-3c-2-9 1-18 8-24 1 12 5 19 13 22-7 5-14 6-21 2Z");
+      shape.setAttribute("class", "review-bird-shape");
+      svg.append(shape);
+    }
+    creature.append(svg);
+    creature.addEventListener("animationend", () => creature.remove(), { once: true });
+    card.append(creature);
+  }
 }
 
 function renderReviews(reviews) {
   if (!reviewList || !summary) return;
+  latestReviews = reviews;
   if (reviews.length === 0) {
     summary.textContent = "Be the first to share your experience.";
     showMessage(reviewList, "No approved reviews yet. Your review can be the first.");
@@ -24,15 +138,24 @@ function renderReviews(reviews) {
 
   const average = reviews.reduce((total, review) => total + review.rating, 0) / reviews.length;
   summary.textContent = `${average.toFixed(1)} / 5 \u00b7 ${reviews.length} recent ${reviews.length === 1 ? "review" : "reviews"}`;
-  const cards = reviews.map(review => {
+  const cards = reviews.map((review, index) => {
     const card = document.createElement("article");
-    card.className = "review-card";
+    card.className = review.rating < 2 ? "review-card review-card-low" : "review-card";
+    card.style.setProperty("--review-index", String(index));
+
+    const cardTop = document.createElement("div");
+    cardTop.className = "review-card-top";
 
     const stars = document.createElement("div");
     stars.className = "review-stars";
     stars.setAttribute("role", "img");
     stars.setAttribute("aria-label", `${review.rating} out of 5 stars`);
     stars.textContent = `${"\u2605".repeat(review.rating)}${"\u2606".repeat(5 - review.rating)}`;
+
+    const score = document.createElement("span");
+    score.className = "review-score";
+    score.textContent = `${review.rating}/5`;
+    cardTop.append(stars, score);
 
     const message = document.createElement("p");
     message.className = "review-message";
@@ -51,10 +174,31 @@ function renderReviews(reviews) {
       date.textContent = "Recently";
     }
     footer.append(name, date);
-    card.append(stars, message, footer);
+    card.tabIndex = 0;
+    card.setAttribute("role", "group");
+    card.setAttribute("aria-label", `${review.rating} out of 5 stars. Review by ${review.name}.`);
+    const animateCreature = () => addCardCreatures(card, review.rating);
+    card.addEventListener("pointerenter", animateCreature);
+    card.addEventListener("focus", animateCreature);
+    card.append(cardTop, message, footer);
     return card;
   });
-  reviewList.replaceChildren(...cards);
+  pageCapacity = reviewsPerPage();
+  const pages = [];
+  for (let start = 0; start < cards.length; start += pageCapacity) {
+    const page = document.createElement("div");
+    page.className = "review-page";
+    page.setAttribute("role", "group");
+    page.setAttribute("aria-roledescription", "slide");
+    const pageCards = cards.slice(start, start + pageCapacity);
+    page.setAttribute("aria-label", `Reviews ${start + 1} to ${start + pageCards.length} of ${cards.length}`);
+    page.append(...pageCards);
+    pages.push(page);
+  }
+  lastActivePage = -1;
+  reviewList.replaceChildren(...pages);
+  reviewViewport?.scrollTo({ left: 0, behavior: "auto" });
+  updateCarouselControls();
 }
 
 if (!isFirebaseConfigured) {
@@ -74,7 +218,7 @@ if (!isFirebaseConfigured) {
       collection(database, "reviews"),
       where("approved", "==", true),
       orderBy("createdAt", "desc"),
-      limit(9)
+      limit(50)
     );
 
     onSnapshot(approvedReviews,
