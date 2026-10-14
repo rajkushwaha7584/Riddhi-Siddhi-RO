@@ -74,7 +74,7 @@ if (!isFirebaseConfigured) {
       import("https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js"),
       import("https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js")
     ]);
-    const { GoogleAuthProvider, getAuth, onAuthStateChanged, signInWithRedirect, signOut } = authSdk;
+    const { GoogleAuthProvider, getAuth, onAuthStateChanged, signInWithPopup, signOut } = authSdk;
     const { collection, doc, getDoc, getFirestore, onSnapshot, orderBy, query, updateDoc, where } = firestore;
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -82,7 +82,7 @@ if (!isFirebaseConfigured) {
     const googleProvider = new GoogleAuthProvider();
     let stopPendingReviews = null;
 
-    signInButton.addEventListener("click", () => signInWithRedirect(auth, googleProvider).catch(error => {
+    signInButton.addEventListener("click", () => signInWithPopup(auth, googleProvider).catch(error => {
       console.error("Google sign-in failed.", error);
       setStatus(describeSignInError(error), "error");
     }));
