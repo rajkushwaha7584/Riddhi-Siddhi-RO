@@ -12,6 +12,7 @@ const reviewPageStatus = document.querySelector("#review-page-status");
 const previousReviewsButton = document.querySelector("[data-review-prev]");
 const nextReviewsButton = document.querySelector("[data-review-next]");
 let latestReviews = [];
+let totalApprovedReviewCount = null;
 let pageCapacity = 0;
 let lastActivePage = -1;
 
@@ -177,11 +178,27 @@ function addCardCreatures(card, rating) {
   }
 }
 
+function updateReviewSummary(reviews) {
+  if (!summary) return;
+  if (reviews.length === 0) {
+    summary.textContent = totalApprovedReviewCount === null || totalApprovedReviewCount === 0
+      ? "Be the first to share your experience."
+      : `${totalApprovedReviewCount} approved ${totalApprovedReviewCount === 1 ? "review" : "reviews"}`;
+    return;
+  }
+
+  const average =
+    reviews.reduce((total, review) => total + review.rating, 0) /
+    reviews.length;
+  const count = totalApprovedReviewCount ?? reviews.length;
+  summary.textContent = `${average.toFixed(1)} / 5 \u00b7 ${count} approved ${count === 1 ? "review" : "reviews"}`;
+}
+
 function renderReviews(reviews) {
   if (!reviewList || !summary) return;
   latestReviews = reviews;
   if (reviews.length === 0) {
-    summary.textContent = "Be the first to share your experience.";
+    updateReviewSummary(reviews);
     showMessage(
       reviewList,
       "No approved reviews yet. Your review can be the first.",
@@ -189,10 +206,7 @@ function renderReviews(reviews) {
     return;
   }
 
-  const average =
-    reviews.reduce((total, review) => total + review.rating, 0) /
-    reviews.length;
-  summary.textContent = `${average.toFixed(1)} / 5 \u00b7 ${reviews.length} recent ${reviews.length === 1 ? "review" : "reviews"}`;
+  updateReviewSummary(reviews);
   const cards = reviews.map((review, index) => {
     const card = document.createElement("article");
     card.className =
@@ -284,6 +298,7 @@ if (!isFirebaseConfigured) {
     const {
       addDoc,
       collection,
+      getCountFromServer,
       getFirestore,
       limit,
       onSnapshot,
@@ -293,6 +308,10 @@ if (!isFirebaseConfigured) {
       where,
     } = firestore;
     const database = getFirestore(initializeApp(firebaseConfig));
+    const allApprovedReviews = query(
+      collection(database, "reviews"),
+      where("approved", "==", true),
+    );
     const approvedReviews = query(
       collection(database, "reviews"),
       where("approved", "==", true),
@@ -302,8 +321,15 @@ if (!isFirebaseConfigured) {
 
     onSnapshot(
       approvedReviews,
-      (snapshot) =>
-        renderReviews(snapshot.docs.map((document) => document.data())),
+      (snapshot) => {
+        renderReviews(snapshot.docs.map((document) => document.data()));
+        getCountFromServer(allApprovedReviews).then((countSnapshot) => {
+          totalApprovedReviewCount = countSnapshot.data().count;
+          updateReviewSummary(latestReviews);
+        }).catch((error) => {
+          console.error("Unable to count approved customer reviews.", error);
+        });
+      },
       (error) => {
         console.error("Unable to load customer reviews.", error);
         if (summary)
@@ -355,11 +381,8 @@ if (!isFirebaseConfigured) {
         }
 
         const notification = new FormData();
-        const publicSiteUrl =
-          window.SITE_CONTENT?.siteUrl ||
-          "https://rajkushwaha7584.github.io/deploy-project/";
-        const adminDashboardUrl = new URL("./admin-reviews.html", publicSiteUrl)
-          .href;
+        const adminDashboardUrl =
+          "https://rajkushwaha7584.github.io/Riddhi-Siddhi-RO/admin-reviews.html";
         notification.append("access_key", accessKey);
         notification.append(
           "subject",
