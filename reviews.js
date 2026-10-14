@@ -249,15 +249,48 @@ if (!isFirebaseConfigured) {
       submitButton.disabled = true;
       if (status) status.textContent = "Sending your review...";
       try {
+        const reviewerName = String(values.get("name") || "").trim().slice(0, 80) || "Customer";
         await addDoc(collection(database, "reviews"), {
-          name: String(values.get("name") || "").trim().slice(0, 80) || "Customer",
+          name: reviewerName,
           message: message.slice(0, 1200),
           rating,
           approved: false,
           createdAt: serverTimestamp()
         });
         form.reset();
-        if (status) status.textContent = "Thanks! Your review was sent and will appear here after approval.";
+        const accessKey = window.SITE_CONTENT?.web3FormsAccessKey;
+        if (!accessKey || accessKey.startsWith("PASTE_")) {
+          if (status) status.textContent = "Your review was submitted and is waiting for approval. Email alerts are not configured yet.";
+          return;
+        }
+
+        const notification = new FormData();
+        const publicSiteUrl = window.SITE_CONTENT?.siteUrl || "https://rajkushwaha7584.github.io/deploy-project/";
+        const adminDashboardUrl = new URL("./admin-reviews.html", publicSiteUrl).href;
+        notification.append("access_key", accessKey);
+        notification.append("subject", `Review awaiting approval (${rating}/5)`);
+        notification.append("from_name", "Riddhi Siddhi Portfolio");
+        notification.append("reviewer", reviewerName);
+        notification.append("rating", `${rating} / 5 stars`);
+        notification.append("review", message.slice(0, 1200));
+        notification.append("admin_dashboard", adminDashboardUrl);
+        notification.append("message", [
+          "A new customer review is waiting for your approval.",
+          `Name: ${reviewerName}`,
+          `Rating: ${rating}/5`,
+          `Review: ${message.slice(0, 1200)}`,
+          `Open the private approval dashboard: ${adminDashboardUrl}`
+        ].join("\n\n"));
+
+        try {
+          const response = await fetch("https://api.web3forms.com/submit", { method: "POST", body: notification });
+          const result = await response.json();
+          if (!response.ok || !result.success) throw new Error(result.message || "Email notification failed.");
+          if (status) status.textContent = "Review submitted! Check your email for the approval link. It will appear publicly after you approve it.";
+        } catch (error) {
+          console.error("Review saved, but its email notification failed.", error);
+          if (status) status.textContent = "Your review was submitted and is waiting for approval, but the email alert could not be sent. Check Web3Forms setup.";
+        }
       } catch (error) {
         console.error("Unable to submit customer review.", error);
         if (status) status.textContent = "Your review could not be sent. Please try again later.";

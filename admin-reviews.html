@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071522">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Review approvals | Riddhi Siddhi Enterprises</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin-reviews.css">
+  <script src="content.js" defer></script>
+  <script type="module" src="admin-reviews.js"></script>
+</head>
+<body>
+  <main class="admin-shell">
+    <header class="admin-header">
+      <a class="admin-brand" href="index.html"><span class="admin-mark">RS✦</span><span><strong>Riddhi Siddhi</strong><small>REVIEW APPROVALS</small></span></a>
+      <a class="back-link" href="index.html#feedback">View portfolio ↗</a>
+    </header>
+
+    <section class="admin-intro" aria-labelledby="admin-title">
+      <p class="admin-kicker">PRIVATE REVIEW DASHBOARD</p>
+      <h1 id="admin-title">Customer <span>reviews</span></h1>
+      <p>Sign in with your Google account to review new feedback. Approved reviews appear on the public portfolio.</p>
+    </section>
+
+    <section class="admin-panel" aria-live="polite">
+      <div class="admin-toolbar">
+        <div><h2>Pending approval</h2><p id="review-count">Connect your administrator account to continue.</p></div>
+        <button class="admin-button admin-signin" id="admin-signin" type="button">Sign in with Google</button>
+        <button class="admin-button admin-signout" id="admin-signout" type="button" hidden>Sign out</button>
+      </div>
+      <p class="admin-status" id="admin-status" role="status">Checking review service…</p>
+      <div class="admin-review-list" id="admin-review-list"></div>
+      <section class="admin-setup" id="admin-setup" hidden>
+        <h3>Finish administrator setup</h3>
+        <p>Copy your account UID, then create a document with this exact ID in Firestore → <code>admins</code>. The document can contain <code>enabled: true</code>. Only you can create this administrator record from the Firebase console.</p>
+        <div class="admin-uid-row"><code id="admin-uid"></code><button class="admin-button" id="copy-uid" type="button">Copy UID</button></div>
+        <p class="admin-small">After creating it, refresh this page. Keep the <code>admins</code> collection write-protected by the Firestore rules.</p>
+      </section>
+    </section>
+    <footer class="admin-footer">Review approval access is protected by Firebase Authentication and Firestore rules.</footer>
+  </main>
+</body>
+</html>
