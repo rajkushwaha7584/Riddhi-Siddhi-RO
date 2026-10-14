@@ -39,7 +39,9 @@ The contact form can send without opening the visitor's email app using [Web3For
 
 5. Commit and deploy the site. To publish a review, open Firestore → `reviews`, edit that review, and change `approved` from `false` to `true`.
 
-Until the web config is filled in and the Firestore rules/index are deployed, the review form stays disabled and the page displays a setup message. The free Firebase Spark plan has usage limits; check Firebase's current [Firestore pricing](https://firebase.google.com/docs/firestore/pricing) before launch. Basic Firestore rules validate submissions and keep pending reviews off the public page, but they do not provide strong rate limiting against spam.
+Until the web config is filled in and the Firestore rules/index are deployed, the review form stays disabled and the page displays a setup message. The free Firebase Spark plan has usage limits; check Firebase's current [Firestore pricing](https://firebase.google.com/docs/firestore/pricing) before launch. Basic Firestore rules validate submissions and keep pending reviews off the public page, but they do not 
+https://console.firebase.google.com/project/ro-by-rs/firestore/databases/-default-/data/~2Freviews~2FgOiZaueLR7SRu84LVXsL?view=panel-view&query=1%7CLIM%7C3%2F100&scopeType=collection&scopeName=%2Freviews
+provide strong rate limiting against spam.
 
 ## Publish on GitHub Pages
 
