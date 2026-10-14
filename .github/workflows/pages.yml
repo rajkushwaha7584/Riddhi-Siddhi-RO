@@ -107,6 +107,7 @@ jobs:
           SITE_PHONE_DISPLAY: ${{ vars.SITE_PHONE_DISPLAY }}
           SITE_PHONE_DIAL: ${{ vars.SITE_PHONE_DIAL }}
           SITE_EMAIL: ${{ vars.SITE_EMAIL }}
+          SITE_URL: ${{ vars.SITE_URL }}
           WEB3FORMS_ACCESS_KEY: ${{ vars.WEB3FORMS_ACCESS_KEY }}
           FIREBASE_API_KEY: ${{ vars.FIREBASE_API_KEY }}
           FIREBASE_AUTH_DOMAIN: ${{ vars.FIREBASE_AUTH_DOMAIN }}

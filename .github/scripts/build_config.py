@@ -11,6 +11,7 @@ DEFAULTS = {
     "SITE_PHONE_DISPLAY": "+91 70004 11604",
     "SITE_PHONE_DIAL": "+917000411604",
     "SITE_EMAIL": "hello@riddhisiddhienterprises.in",
+    "SITE_URL": "https://rajkushwaha7584.github.io/deploy-project/",
     "WEB3FORMS_ACCESS_KEY": "PASTE_WEB3FORMS_ACCESS_KEY",
     "FIREBASE_API_KEY": "PASTE_FIREBASE_API_KEY",
     "FIREBASE_AUTH_DOMAIN": "PASTE_FIREBASE_AUTH_DOMAIN",
@@ -56,6 +57,7 @@ def main() -> None:
         "phoneDisplay": values["SITE_PHONE_DISPLAY"],
         "phoneDial": values["SITE_PHONE_DIAL"],
         "email": values["SITE_EMAIL"],
+        "siteUrl": values["SITE_URL"],
         "web3FormsAccessKey": values["WEB3FORMS_ACCESS_KEY"],
     }
     firebase = {
