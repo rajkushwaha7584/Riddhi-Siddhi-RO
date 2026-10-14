@@ -265,8 +265,8 @@ if (!isFirebaseConfigured) {
         }
 
         const notification = new FormData();
-        const publicSiteUrl = window.SITE_CONTENT?.siteUrl || "https://rajkushwaha7584.github.io/deploy-project/";
-        const adminDashboardUrl = new URL("./admin-reviews.html", publicSiteUrl).href;
+        
+        const adminDashboardUrl = "https://rajkushwaha7584.github.io/Riddhi-Siddhi-RO/admin-reviews.html";
         notification.append("access_key", accessKey);
         notification.append("subject", `Review awaiting approval (${rating}/5)`);
         notification.append("from_name", "Riddhi Siddhi Portfolio");
